@@ -22,17 +22,21 @@ class BooksController < ApplicationController
   # POST /books or /books.json
   def create
     @book = Book.new(book_params)
-
+    if @book.title.blank?
+      flash[:alert] = "Failed to add book. Please check the form." 
+      render :new and return  
+    end
     respond_to do |format|
       if @book.save
         format.html { redirect_to @book, notice: "Book was successfully created." }
         format.json { render :show, status: :created, location: @book }
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @book.errors, status: :unprocessable_entity }
+        flash[:alert] = "Failed to add book. Please check the form."  # Flash alert on failure
+        render :new
       end
     end
   end
+  
 
   # PATCH/PUT /books/1 or /books/1.json
   def update
